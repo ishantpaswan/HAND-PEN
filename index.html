@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Handboard — Air Drawing with Hand Tracking</title>
+  <meta name="description" content="Draw in mid-air using your webcam and hand gestures. Powered by MediaPipe Hands." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Initializing Hand Tracking…</div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar" id="toolbar">
+    <!-- Color Picker -->
+    <div class="color-wrapper" id="colorWrapper">
+      <input type="color" id="colorPicker" value="#00ff88" title="Brush Color" />
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Brush Size -->
+    <input type="range" class="brush-slider" id="brushSize" min="2" max="24" value="5" title="Brush Size" />
+    <span class="brush-label" id="brushLabel">5</span>
+
+    <div class="divider"></div>
+
+    <!-- Eraser -->
+    <button class="tool-btn" id="btnEraser" title="Eraser (E)">
+      <svg viewBox="0 0 24 24"><path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 01-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0zM4.22 15.58l3.54 3.53c.78.79 2.04.79 2.83 0l3.53-3.53-4.95-4.95-4.95 4.95z"/></svg>
+    </button>
+
+    <!-- Move -->
+    <button class="tool-btn" id="btnMove" title="Move Canvas (M)">
+      <svg viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/></svg>
+    </button>
+
+    <!-- Grab -->
+    <button class="tool-btn" id="btnGrab" title="Grab & Move Stroke (G)">
+      <svg viewBox="0 0 24 24"><path d="M9 6.5a1.5 1.5 0 113 0v5h-3v-5zm4 0a1.5 1.5 0 113 0v5h-3v-5zm4 0a1.5 1.5 0 113 0v3.5h-3V6.5zM6 11.5a1.5 1.5 0 113 0V15H6v-3.5zM4 17v-4.5a3.5 3.5 0 013.5-3.5h0V6.5a3.5 3.5 0 017 0V5a3.5 3.5 0 016.5 1.5v5a3.5 3.5 0 01-1.02 2.47L16 18h-5l-3.5-1H4z"/></svg>
+    </button>
+
+    <!-- Undo -->
+    <button class="tool-btn" id="btnUndo" title="Undo (Ctrl+Z)">
+      <svg viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+    </button>
+
+    <!-- Clear -->
+    <button class="tool-btn" id="btnClear" title="Clear All (C)">
+      <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+  <!-- Canvas Area -->
+  <div id="canvas-container">
+    <video id="webcam" autoplay playsinline></video>
+    <canvas id="webcamCanvas"></canvas>
+    <canvas id="drawingCanvas"></canvas>
+  </div>
+
+  <!-- Finger Cursor -->
+  <div class="finger-cursor" id="fingerCursor"></div>
+
+  <!-- Status Bar -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-dot no-hand" id="statusDot"></div>
+    <span id="statusText">Waiting for hand…</span>
+  </div>
+
+  <!-- Keyboard Shortcuts -->
+  <div class="shortcuts-hint">
+    <kbd>E</kbd> Eraser &nbsp; <kbd>M</kbd> Move &nbsp; <kbd>G</kbd> Grab &nbsp; <kbd>C</kbd> Clear &nbsp; <kbd>Ctrl+Z</kbd> Undo
+  </div>
+
+  <!-- MediaPipe CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+</body>
+</html>

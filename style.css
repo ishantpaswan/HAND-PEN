@@ -1,0 +1,332 @@
+/* ===== RESET & BASE ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ===== CANVAS CONTAINER ===== */
+#canvas-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#canvas-container canvas, #canvas-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+video#webcam {
+  display: none;
+}
+
+canvas#drawingCanvas {
+  z-index: 2;
+}
+
+canvas#webcamCanvas {
+  z-index: 1;
+  opacity: 0.25;
+}
+
+/* ===== TOOLBAR ===== */
+.toolbar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(20, 20, 30, 0.75);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: opacity 0.3s;
+}
+
+.toolbar:hover {
+  background: rgba(20, 20, 30, 0.88);
+}
+
+.toolbar .divider {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Color picker wrapper */
+.color-wrapper {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+
+.color-wrapper:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.color-wrapper input[type="color"] {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  cursor: pointer;
+  background: none;
+}
+
+/* Brush size slider */
+.brush-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 90px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.15), rgba(255,255,255,0.35));
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.brush-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.brush-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Toolbar buttons */
+.tool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tool-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.tool-btn.active {
+  background: rgba(0, 200, 255, 0.2);
+  color: #00d4ff;
+  box-shadow: 0 0 12px rgba(0, 200, 255, 0.25);
+}
+
+.tool-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Brush size label */
+.brush-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ===== STATUS INDICATOR ===== */
+.status-bar {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  background: rgba(20, 20, 30, 0.7);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #555;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.status-dot.drawing {
+  background: #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+}
+
+.status-dot.idle {
+  background: #ffaa00;
+  box-shadow: 0 0 8px #ffaa00;
+}
+
+.status-dot.erasing {
+  background: #ff4466;
+  box-shadow: 0 0 8px #ff4466;
+}
+
+.status-dot.moving {
+  background: #00d4ff;
+  box-shadow: 0 0 8px #00d4ff;
+}
+
+.status-dot.no-hand {
+  background: #555;
+  box-shadow: none;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: opacity 0.6s;
+}
+
+.loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #00d4ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 1px;
+}
+
+/* ===== FINGER CURSOR ===== */
+.finger-cursor {
+  position: fixed;
+  pointer-events: none;
+  z-index: 50;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #00d4ff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.15s, height 0.15s, border-color 0.2s;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+}
+
+.finger-cursor.drawing {
+  border-color: #00ff88;
+  box-shadow: 0 0 14px rgba(0, 255, 136, 0.4);
+}
+
+.finger-cursor.erasing {
+  width: 30px;
+  height: 30px;
+  border-color: #ff4466;
+  box-shadow: 0 0 14px rgba(255, 68, 102, 0.4);
+}
+
+.finger-cursor.grabbing {
+  border-color: #ffaa00;
+  box-shadow: 0 0 16px rgba(255, 170, 0, 0.5);
+  background: rgba(255, 170, 0, 0.15);
+}
+
+.finger-cursor.grab-idle {
+  border-color: #ffaa00;
+  border-style: dashed;
+  box-shadow: 0 0 10px rgba(255, 170, 0, 0.25);
+}
+
+/* ===== KEYBOARD SHORTCUT HINT ===== */
+.shortcuts-hint {
+  position: fixed;
+  bottom: 60px;
+  right: 20px;
+  z-index: 100;
+  padding: 10px 14px;
+  background: rgba(20, 20, 30, 0.65);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.7;
+}
+
+.shortcuts-hint kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+}
