@@ -1,2 +1,2 @@
-# HAND-PEN
-HAND BOARD AND PEN FOR ONLINE LECTURE 
+Online camera pen that detect hand to write 
+
